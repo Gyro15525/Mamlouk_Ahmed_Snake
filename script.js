@@ -4,6 +4,8 @@ const ctx = canvas.getContext('2d');
 let score = 0;
 let level = 1;
 
+let nourritureX=200; //position initiale de la nourriture
+let nourritureY=200; //position initiale de la nourriture
 
 let avance=false  // jai cree cette variable pour savoir si le jeu est en pause ou non pour savoir si je doit prendre en compte linput du clavier
 //donc je doit lassocier a start et pause
@@ -53,6 +55,10 @@ function dessiner(){
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
     ctx.fillStyle = "green";
     ctx.fillRect(x,y,20,20); //dessine le snake 20x20 en x,y
+
+
+    ctx.fillStyle = "red";
+    ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
 }
 
 
@@ -63,6 +69,12 @@ function jeu(){
         }
         if(y+directionY<400 && y+directionY>=0){  //je verifie que le snake ne sort pas du canvas en y
         y=y+directionY;
+        }
+        if(x===nourritureX && y===nourritureY){ //je verifie si le snake a mange la nourriture
+            score=score+1;
+            document.getElementById("score").innerText = "Score: " + score; //met a jour le score dans le html
+            nourritureX=Math.floor(Math.random()*20)*20; 
+            nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
         }
         dessiner();
     }
