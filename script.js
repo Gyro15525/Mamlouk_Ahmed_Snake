@@ -19,8 +19,10 @@ function pause(){           //fonction pour pause
 document.getElementById("start").addEventListener("click",start);  //jai associe le bouton start a la fonction start
 document.getElementById("pause").addEventListener("click",pause);  //jai associe le bouton pause a la fonction pause
 
-let x=0;
-let y=0;     // variables globales pour la position du snake
+let snake = [
+    {x:0, y:0} // la position du snake
+];
+
 let directionX=0; // variable pour la direction du snake
 let directionY=0;
 //la direction depend de linput du clavier
@@ -42,6 +44,9 @@ function clavier(x){    //fonction pour gerer linput du clavier
         directionX=0;
         directionY=20;
     }
+    else if (x.key ==' '){  //espace pour pause
+        avance = !avance;
+    }
 }
 document.addEventListener('keydown', clavier); //va passer un objet qui conttient des infos sur la touche appuyee
 
@@ -54,7 +59,7 @@ document.addEventListener('keydown', clavier); //va passer un objet qui conttien
 function dessiner(){
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
     ctx.fillStyle = "green";
-    ctx.fillRect(x,y,20,20); //dessine le snake 20x20 en x,y
+    ctx.fillRect(snake[0].x,snake[0].y,20,20); //dessine le snake 20x20 en x,y
 
 
     ctx.fillStyle = "red";
@@ -64,15 +69,15 @@ function dessiner(){
 
 function jeu(){
     if(avance===true){  //si le jeu nest pas en pause        
-        if(x+directionX<400 && x+directionX>=0){  //je verifie que le snake ne sort pas du canvas en x
-        x=x+directionX;  //je deplace le snake en fonction de direction
+        if(snake[0].x+directionX<400 && snake[0].x+directionX>=0){  //je verifie que le snake ne sort pas du canvas en x
+        snake[0].x=snake[0].x+directionX;  //je deplace le snake en fonction de direction
         }
-        if(y+directionY<400 && y+directionY>=0){  //je verifie que le snake ne sort pas du canvas en y
-        y=y+directionY;
+        if(snake[0].y+directionY<400 && snake[0].y+directionY>=0){  //je verifie que le snake ne sort pas du canvas en y
+        snake[0].y=snake[0].y+directionY;
         }
-        if(x===nourritureX && y===nourritureY){ //je verifie si le snake a mange la nourriture
+        if(snake[0].x===nourritureX && snake[0].y===nourritureY){ //je verifie si le snake a mange la nourriture
             score=score+1;
-            document.getElementById("score").innerText = "Score: " + score; //met a jour le score dans le html
+            document.getElementById("score").innerText = score; //met a jour le score dans le html
             nourritureX=Math.floor(Math.random()*20)*20; 
             nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
         }
