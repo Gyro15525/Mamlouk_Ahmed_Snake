@@ -20,7 +20,7 @@ document.getElementById("start").addEventListener("click",start);  //jai associe
 document.getElementById("pause").addEventListener("click",pause);  //jai associe le bouton pause a la fonction pause
 
 let snake = [
-    {x:0, y:0} // la position du snake
+    {x:0, y:0}, // la position de la tete du snake
 ];
 
 let directionX=0; // variable pour la direction du snake
@@ -59,8 +59,9 @@ document.addEventListener('keydown', clavier); //va passer un objet qui conttien
 function dessiner(){
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
     ctx.fillStyle = "green";
-    ctx.fillRect(snake[0].x,snake[0].y,20,20); //dessine le snake 20x20 en x,y
-
+    for(let i=0;i<snake.length;i++){
+    ctx.fillRect(snake[i].x,snake[i].y,20,20); //dessine le snake entier
+    }
 
     ctx.fillStyle = "red";
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
@@ -68,21 +69,27 @@ function dessiner(){
 
 
 function jeu(){
-    if(avance===true){  //si le jeu nest pas en pause        
+    if(avance===true){  //si le jeu nest pas en pause   
+        for(let i=1;i<snake.length;i++){
+            snake[snake.length-i].x=snake[snake.length-i-1].x;//le corps prend la position precedente de la tete
+            snake[snake.length-i].y=snake[snake.length-i-1].y;
+        }     
         if(snake[0].x+directionX<400 && snake[0].x+directionX>=0){  //je verifie que le snake ne sort pas du canvas en x
-        snake[0].x=snake[0].x+directionX;  //je deplace le snake en fonction de direction
+            snake[0].x=snake[0].x+directionX;  //je deplace le snake en fonction de direction
         }
         if(snake[0].y+directionY<400 && snake[0].y+directionY>=0){  //je verifie que le snake ne sort pas du canvas en y
-        snake[0].y=snake[0].y+directionY;
+            snake[0].y=snake[0].y+directionY;
         }
         if(snake[0].x===nourritureX && snake[0].y===nourritureY){ //je verifie si le snake a mange la nourriture
             score=score+1;
             document.getElementById("score").innerText = score; //met a jour le score dans le html
             nourritureX=Math.floor(Math.random()*20)*20; 
             nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
+            snake.push({x:snake[snake.length-1].x,y:snake[snake.length-1].y}); //ajoute un segment
         }
         dessiner();
     }
     setTimeout(jeu, 200); //je recommence la fonction
 }
+
 jeu();
