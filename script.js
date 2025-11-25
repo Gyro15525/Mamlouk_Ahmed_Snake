@@ -7,8 +7,10 @@ let level = 1;
 let nourritureX=200; //position initiale de la nourriture
 let nourritureY=200; //position initiale de la nourriture
 
-let avance=false  // jai cree cette variable pour savoir si le jeu est en pause ou non pour savoir si je doit prendre en compte linput du clavier
+let avance=false;  // jai cree cette variable pour savoir si le jeu est en pause ou non pour savoir si je doit prendre en compte linput du clavier
 //donc je doit lassocier a start et pause
+let perdu = false;
+
 function start(){             //fonction pour start
     avance = true;
 }
@@ -21,6 +23,7 @@ document.getElementById("pause").addEventListener("click",pause);  //jai associe
 
 let snake = [
     {x:0, y:0}, // la position de la tete du snake
+    {x:0, y:0}
 ];
 
 let directionX=0; // variable pour la direction du snake
@@ -45,7 +48,12 @@ function clavier(x){    //fonction pour gerer linput du clavier
         directionY=20;
     }
     else if (x.key ==' '){  //espace pour pause
-        avance = !avance;
+        if (perdu) {
+            recommence();  // Si perdu alors recommencer
+        } 
+        else {
+            avance = !avance;
+        }
     }
 }
 document.addEventListener('keydown', clavier); //va passer un objet qui conttient des infos sur la touche appuyee
@@ -66,20 +74,37 @@ function dessiner(){
     ctx.fillStyle = "red";
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
 }
-
-
+function recommence() { //fonction pour recommencer le jeu
+    snake = [{x: 0, y: 0}, {x: 0, y: 0}];
+    directionX = 0;
+    directionY = 0;
+    score = 0;
+    document.getElementById("score").innerText = score;
+    nourritureX = 200;
+    nourritureY = 200;
+    perdu = false;
+    avance = false;
+    dessiner();
+    jeu();
+}
+let x_suivante=0;
+let y_suivante=0;
 function jeu(){
-    if(avance===true){  //si le jeu nest pas en pause   
+    if(avance === true && perdu === false){  //si le jeu nest pas en pause   
+        x_suivante=snake[0].x+directionX;
+        y_suivante=snake[0].y+directionY;
+        if (x_suivante >= 400 || x_suivante < 0 || y_suivante >= 400 || y_suivante < 0) {
+            avance = false;
+            perdu = true;
+            return;
+        }
         for(let i=1;i<snake.length;i++){
             snake[snake.length-i].x=snake[snake.length-i-1].x;//le corps prend la position precedente de la tete
             snake[snake.length-i].y=snake[snake.length-i-1].y;
         }     
-        if(snake[0].x+directionX<400 && snake[0].x+directionX>=0){  //je verifie que le snake ne sort pas du canvas en x
-            snake[0].x=snake[0].x+directionX;  //je deplace le snake en fonction de direction
-        }
-        if(snake[0].y+directionY<400 && snake[0].y+directionY>=0){  //je verifie que le snake ne sort pas du canvas en y
-            snake[0].y=snake[0].y+directionY;
-        }
+        snake[0].x=x_suivante;  //je deplace le snake en fonction de direction
+        snake[0].y=y_suivante;
+
         if(snake[0].x===nourritureX && snake[0].y===nourritureY){ //je verifie si le snake a mange la nourriture
             score=score+1;
             document.getElementById("score").innerText = score; //met a jour le score dans le html
