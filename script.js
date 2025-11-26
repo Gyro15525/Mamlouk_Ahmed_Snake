@@ -26,7 +26,7 @@ let snake = [
     {x:0, y:0}
 ];
 
-let directionX=0; // variable pour la direction du snake
+let directionX=20; // variable pour la direction du snake
 let directionY=0;
 //la direction depend de linput du clavier
 
@@ -76,7 +76,7 @@ function dessiner(){
 }
 function recommence() { //fonction pour recommencer le jeu
     snake = [{x: 0, y: 0}, {x: 0, y: 0}];
-    directionX = 0;
+    directionX = 20;
     directionY = 0;
     score = 0;
     document.getElementById("score").innerText = score;
@@ -99,9 +99,18 @@ function jeu(){
             return;
         }
         for(let i=1;i<snake.length;i++){
+            if (x_suivante===snake[i].x && y_suivante===snake[i].y){ //je verifie si la tete touche le corps
+                avance = false;
+                perdu = true;
+                return;
+            }
+        }
+        for(let i=1;i<snake.length;i++){
             snake[snake.length-i].x=snake[snake.length-i-1].x;//le corps prend la position precedente de la tete
             snake[snake.length-i].y=snake[snake.length-i-1].y;
-        }     
+        }
+        
+        
         snake[0].x=x_suivante;  //je deplace le snake en fonction de direction
         snake[0].y=y_suivante;
 
@@ -110,6 +119,12 @@ function jeu(){
             document.getElementById("score").innerText = score; //met a jour le score dans le html
             nourritureX=Math.floor(Math.random()*20)*20; 
             nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
+            for (let i=0;i<snake.length;i++){
+                while (nourritureX===snake[i].x && nourritureY ===snake[i].y){ //tant que la nourriture est sur le snake
+                    nourritureX=Math.floor(Math.random()*20)*20;  //je creer une autre position pour nourriture
+                    nourritureY=Math.floor(Math.random()*20)*20; 
+                }
+            }
             snake.push({x:snake[snake.length-1].x,y:snake[snake.length-1].y}); //ajoute un segment
         }
         dessiner();
