@@ -2,7 +2,7 @@ const canvas = document.getElementById('Canvas'); // canvas 400x400
 const ctx = canvas.getContext('2d');
 
 let score = 0;
-let level = 1;
+let vitesse = 1;
 let vitesse_snake=200; //vitesse initiale du snake
 
 let nourritureX=200; //position initiale de la nourriture
@@ -31,7 +31,18 @@ let directionX=20; // variable pour la direction du snake
 let directionY=0;
 //la direction depend de linput du clavier
 
+let change_direction = false;
 function clavier(x){    //fonction pour gerer linput du clavier
+    if (x.repeat) return;
+    if (x.key ==' '){  //espace pour pause
+        if (perdu) {
+            recommence();  // Si perdu alors recommencer
+        } 
+        else {
+            avance = !avance;
+        }
+    }
+    if (change_direction) return; //empche de changer de direction plusieurs fois dans avant une seule timeout 
     if (x.key =='ArrowRight'&& directionX!=-20){ //pas de marche arriere
         directionX=20;
         directionY=0;
@@ -48,14 +59,7 @@ function clavier(x){    //fonction pour gerer linput du clavier
         directionX=0;
         directionY=20;
     }
-    else if (x.key ==' '){  //espace pour pause
-        if (perdu) {
-            recommence();  // Si perdu alors recommencer
-        } 
-        else {
-            avance = !avance;
-        }
-    }
+    change_direction = true;
 }
 document.addEventListener('keydown', clavier); //va passer un objet qui conttient des infos sur la touche appuyee
 
@@ -67,12 +71,12 @@ document.addEventListener('keydown', clavier); //va passer un objet qui conttien
 
 function dessiner(){
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
-    ctx.fillStyle = "green";
+    ctx.fillStyle = "#000000";
     for(let i=0;i<snake.length;i++){
     ctx.fillRect(snake[i].x,snake[i].y,20,20); //dessine le snake entier
     }
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "#444444";
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
 }
 function recommence() { //fonction pour recommencer le jeu
@@ -80,32 +84,39 @@ function recommence() { //fonction pour recommencer le jeu
     directionX = 20;
     directionY = 0;
     score = 0;
+    vitesse = 1;
     document.getElementById("score").innerText = score;
+    document.getElementById("vitesse").innerText = vitesse;
     nourritureX = 200;
     nourritureY = 200;
     perdu = false;
-    avance = false;
+    avance = true;
+    change_direction = false;
     vitesse_snake = 200;
     dessiner();
     jeu();
 }
+
 function perdre(){
     dessiner();
-    ctx.fillStyle = "rgba(0, 155, 150, 0.5)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0,0,400,400);
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#87CEEB";
     ctx.font = "40px Arial";
     ctx.fillText("Game Over", 90, 200);
 }
+
 let x_suivante=0;
 let y_suivante=0;
 function jeu(){
+    change_direction = false;
     if(avance === true && perdu === false){  //si le jeu nest pas en pause   
         x_suivante=snake[0].x+directionX;
         y_suivante=snake[0].y+directionY;
         if (x_suivante >= 400 || x_suivante < 0 || y_suivante >= 400 || y_suivante < 0) {
             avance = false;
             perdu = true;
+            change_direction = false;
             perdre();
             return;
         }
@@ -128,7 +139,9 @@ function jeu(){
 
         if(snake[0].x===nourritureX && snake[0].y===nourritureY){ //je verifie si le snake a mange la nourriture
             score=score+1;
+            vitesse=vitesse+1;
             document.getElementById("score").innerText = score; //met a jour le score dans le html
+            document.getElementById("vitesse").innerText = vitesse; //met a jour la vitesse dans le html
             nourritureX=Math.floor(Math.random()*20)*20; 
             nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
             for (let i=0;i<snake.length;i++){

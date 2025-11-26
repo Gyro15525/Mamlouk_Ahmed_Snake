@@ -2,16 +2,51 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
+    background-color: #87CEEB;
+    color: #000000;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #000000;
+}
+
+div {
+    margin: 10px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+span {
+    margin: 0 15px;
 }
 
 #Canvas {
-    border: 2px solid black;
-    background-color: #f0f0f0;
+    border: 3px solid #000000;
+    background-color: #ADD8E6;
     margin: 20px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 button {
     padding: 10px 20px;
     margin: 5px;
     font-size: 16px;
+    background-color: #000000;
+    color: #87CEEB;
+    border: 2px solid #000000;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+button:active {
+    background-color: #000000;
 }
