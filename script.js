@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d');
 
 let score = 0;
 let level = 1;
+let vitesse_snake=200; //vitesse initiale du snake
 
 let nourritureX=200; //position initiale de la nourriture
 let nourritureY=200; //position initiale de la nourriture
@@ -31,19 +32,19 @@ let directionY=0;
 //la direction depend de linput du clavier
 
 function clavier(x){    //fonction pour gerer linput du clavier
-    if (x.key =='ArrowRight'){ 
+    if (x.key =='ArrowRight'&& directionX!=-20){ //pas de marche arriere
         directionX=20;
         directionY=0;
     }
-    else if (x.key =='ArrowLeft'){
+    else if (x.key =='ArrowLeft' && directionX!=20){
         directionX=-20;
         directionY=0;
     }
-    else if (x.key =='ArrowUp'){
+    else if (x.key =='ArrowUp' && directionY!=20){
         directionX=0;
         directionY=-20;
     }
-    else if (x.key =='ArrowDown'){
+    else if (x.key =='ArrowDown' && directionY!=-20){
         directionX=0;
         directionY=20;
     }
@@ -84,8 +85,17 @@ function recommence() { //fonction pour recommencer le jeu
     nourritureY = 200;
     perdu = false;
     avance = false;
+    vitesse_snake = 200;
     dessiner();
     jeu();
+}
+function perdre(){
+    dessiner();
+    ctx.fillStyle = "rgba(0, 155, 150, 0.5)";
+    ctx.fillRect(0,0,400,400);
+    ctx.fillStyle = "black";
+    ctx.font = "40px Arial";
+    ctx.fillText("Game Over", 90, 200);
 }
 let x_suivante=0;
 let y_suivante=0;
@@ -96,12 +106,14 @@ function jeu(){
         if (x_suivante >= 400 || x_suivante < 0 || y_suivante >= 400 || y_suivante < 0) {
             avance = false;
             perdu = true;
+            perdre();
             return;
         }
         for(let i=1;i<snake.length;i++){
             if (x_suivante===snake[i].x && y_suivante===snake[i].y){ //je verifie si la tete touche le corps
                 avance = false;
                 perdu = true;
+                perdre();
                 return;
             }
         }
@@ -126,10 +138,11 @@ function jeu(){
                 }
             }
             snake.push({x:snake[snake.length-1].x,y:snake[snake.length-1].y}); //ajoute un segment
+            vitesse_snake=vitesse_snake*0.98;
         }
         dessiner();
     }
-    setTimeout(jeu, 200); //je recommence la fonction
+    setTimeout(jeu, vitesse_snake); //je recommence la fonction
 }
 
 jeu();
