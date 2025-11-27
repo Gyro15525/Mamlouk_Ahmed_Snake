@@ -2,8 +2,9 @@ const canvas = document.getElementById('Canvas'); // canvas 400x400
 const ctx = canvas.getContext('2d');
 
 let score = 0;
-let vitesse = 1;
+let vitesse = 100;
 let vitesse_snake=200; //vitesse initiale du snake
+let compte_nourriture=0;
 
 let nourritureX=200; //position initiale de la nourriture
 let nourritureY=200; //position initiale de la nourriture
@@ -35,12 +36,14 @@ let change_direction = false;
 function clavier(x){    //fonction pour gerer linput du clavier
     if (x.repeat) return;
     if (x.key ==' '){  //espace pour pause
+        x.preventDefault();
         if (perdu) {
             recommence();  // Si perdu alors recommencer
         } 
         else {
             avance = !avance;
         }
+        return;
     }
     if (change_direction) return; //empche de changer de direction plusieurs fois dans avant une seule timeout 
     if (x.key =='ArrowRight'&& directionX!=-20){ //pas de marche arriere
@@ -52,10 +55,12 @@ function clavier(x){    //fonction pour gerer linput du clavier
         directionY=0;
     }
     else if (x.key =='ArrowUp' && directionY!=20){
+        x.preventDefault();
         directionX=0;
         directionY=-20;
     }
     else if (x.key =='ArrowDown' && directionY!=-20){
+        x.preventDefault();
         directionX=0;
         directionY=20;
     }
@@ -84,13 +89,14 @@ function recommence() { //fonction pour recommencer le jeu
     directionX = 20;
     directionY = 0;
     score = 0;
-    vitesse = 1;
+    vitesse = 100;
     document.getElementById("score").innerText = score;
     document.getElementById("vitesse").innerText = vitesse;
     nourritureX = 200;
     nourritureY = 200;
     perdu = false;
     avance = true;
+    compte_nourriture = 0;
     change_direction = false;
     vitesse_snake = 200;
     dessiner();
@@ -138,10 +144,8 @@ function jeu(){
         snake[0].y=y_suivante;
 
         if(snake[0].x===nourritureX && snake[0].y===nourritureY){ //je verifie si le snake a mange la nourriture
-            score=score+1;
-            vitesse=vitesse+1;
+            score=score+20;
             document.getElementById("score").innerText = score; //met a jour le score dans le html
-            document.getElementById("vitesse").innerText = vitesse; //met a jour la vitesse dans le html
             nourritureX=Math.floor(Math.random()*20)*20; 
             nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
             for (let i=0;i<snake.length;i++){
@@ -151,7 +155,12 @@ function jeu(){
                 }
             }
             snake.push({x:snake[snake.length-1].x,y:snake[snake.length-1].y}); //ajoute un segment
-            vitesse_snake=vitesse_snake*0.98;
+            compte_nourriture=compte_nourriture+1;
+            if (compte_nourriture % 5 ===0){
+            vitesse_snake=vitesse_snake*0.97;
+            vitesse = Math.floor((200 / vitesse_snake)*100);
+            document.getElementById("vitesse").innerText = vitesse + "%"; //met a jour la vitesse dans le html
+            }
         }
         dessiner();
     }
