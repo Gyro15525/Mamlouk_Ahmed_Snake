@@ -1,6 +1,7 @@
 const canvas = document.getElementById('Canvas'); // canvas 400x400
 const ctx = canvas.getContext('2d');
-
+let niveau =1;
+let changement_niveau=false;
 let score = 0;
 let vitesse = 100;
 let vitesse_snake=200; //vitesse initiale du snake
@@ -83,13 +84,37 @@ function dessiner(){
 
     ctx.fillStyle = "#444444";
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
+    if (changement_niveau) {
+        ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+        ctx.fillRect(395, 0, 5, 400);
+    }
 }
+
+
+
+function dessiner_niveau2(){   
+    ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
+    ctx.fillStyle = "gray";
+    for(let i=0;i<snake.length;i++){
+    ctx.fillRect(snake[i].x,snake[i].y,20,20); //dessine le snake entier
+    }
+
+    ctx.fillStyle = "#ff0000ff";
+    ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
+}
+
+
+
+
+
+
 function recommence() { //fonction pour recommencer le jeu
     snake = [{x: 0, y: 0}, {x: 0, y: 0}];
     directionX = 20;
     directionY = 0;
     score = 0;
     vitesse = 100;
+    niveau = 1;
     document.getElementById("score").innerText = score;
     document.getElementById("vitesse").innerText = vitesse;
     nourritureX = 200;
@@ -98,7 +123,9 @@ function recommence() { //fonction pour recommencer le jeu
     avance = true;
     compte_nourriture = 0;
     change_direction = false;
+    changement_niveau=false;
     vitesse_snake = 200;
+    document.body.style.backgroundColor = "#87CEEB";
     dessiner();
     jeu();
 }
@@ -120,11 +147,24 @@ function jeu(){
         x_suivante=snake[0].x+directionX;
         y_suivante=snake[0].y+directionY;
         if (x_suivante >= 400 || x_suivante < 0 || y_suivante >= 400 || y_suivante < 0) {
+            if (x_suivante >= 400 && changement_niveau){
+                changement_niveau=false;
+                niveau=2;
+                x_suivante=0;
+                directionX=20;
+                directionY=0;
+                document.body.style.backgroundColor = "#9BBA5A";
+                nourritureX = Math.floor(Math.random() * 20) * 20;
+                nourritureY = Math.floor(Math.random() * 20) * 20;
+                dessiner_niveau2()
+            }
+            else{
             avance = false;
             perdu = true;
             change_direction = false;
             perdre();
             return;
+            }
         }
         for(let i=1;i<snake.length;i++){
             if (x_suivante===snake[i].x && y_suivante===snake[i].y){ //je verifie si la tete touche le corps
@@ -162,7 +202,15 @@ function jeu(){
             document.getElementById("vitesse").innerText = vitesse + "%"; //met a jour la vitesse dans le html
             }
         }
+        if (score >=100 && niveau===1){
+            changement_niveau=true;
+        }
+        if (niveau===2){
+            dessiner_niveau2();
+        }
+        else {
         dessiner();
+        }
     }
     setTimeout(jeu, vitesse_snake); //je recommence la fonction
 }
