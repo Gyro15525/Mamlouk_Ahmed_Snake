@@ -3,6 +3,12 @@ const ctx = canvas.getContext('2d');
 let niveau =1;
 let changement_niveau=false;
 let score = 0;
+let meilleur_score = 0;
+if (localStorage.getItem('snakeMeilleurScore')) {
+    meilleur_score = localStorage.getItem('snakeMeilleurScore');
+    document.getElementById("meilleur").innerText = meilleur_score;
+}
+
 let vitesse = 100;
 let vitesse_snake=200; //vitesse initiale du snake
 let compte_nourriture=0;
@@ -26,6 +32,7 @@ document.getElementById("pause").addEventListener("click",pause);  //jai associe
 
 let snake = [
     {x:0, y:0}, // la position de la tete du snake
+    {x:0, y:0},
     {x:0, y:0}
 ];
 
@@ -79,11 +86,14 @@ function dessiner(){
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
     ctx.fillStyle = "#000000";
     for(let i=0;i<snake.length;i++){
-    ctx.fillRect(snake[i].x,snake[i].y,20,20); //dessine le snake entier
+        ctx.beginPath();
+        ctx.roundRect(snake[i].x,snake[i].y,20,20,5); //dessine le snake entier
+        ctx.fill();
     }
-
+    if (changement_niveau===false){
     ctx.fillStyle = "#444444";
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
+    }
     if (changement_niveau) {
         ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
         ctx.fillRect(395, 0, 5, 400);
@@ -109,7 +119,7 @@ function dessiner_niveau2(){
 
 
 function recommence() { //fonction pour recommencer le jeu
-    snake = [{x: 0, y: 0}, {x: 0, y: 0}];
+    snake = [{x: 0, y: 0}, {x: 0, y: 0}, {x:0, y:0}];
     directionX = 20;
     directionY = 0;
     score = 0;
@@ -131,12 +141,25 @@ function recommence() { //fonction pour recommencer le jeu
 }
 
 function perdre(){
+    if (niveau===2){
+        dessiner_niveau2();
+    }
+    else
     dessiner();
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0,0,400,400);
     ctx.fillStyle = "#87CEEB";
     ctx.font = "40px Arial";
     ctx.fillText("Game Over", 90, 200);
+    if (score > meilleur_score) {
+        meilleur_score = score;
+        localStorage.setItem('snakeMeilleurScore', score); // sauvegarder le score dans le stockage local
+        document.getElementById("meilleur").innerText = meilleur_score;
+    }
+    if (score === meilleur_score) {
+        ctx.fillStyle = "#6fa1d7ff";
+        ctx.fillText(" NOUVEAU RECORD ", 10, 240);
+    }
 }
 
 let x_suivante=0;
@@ -186,6 +209,7 @@ function jeu(){
         if(snake[0].x===nourritureX && snake[0].y===nourritureY){ //je verifie si le snake a mange la nourriture
             score=score+20;
             document.getElementById("score").innerText = score; //met a jour le score dans le html
+            if (changement_niveau === false){
             nourritureX=Math.floor(Math.random()*20)*20; 
             nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
             for (let i=0;i<snake.length;i++){
@@ -200,6 +224,7 @@ function jeu(){
             vitesse_snake=vitesse_snake*0.97;
             vitesse = Math.floor((200 / vitesse_snake)*100);
             document.getElementById("vitesse").innerText = vitesse + "%"; //met a jour la vitesse dans le html
+            }
             }
         }
         if (score >=100 && niveau===1){
