@@ -100,16 +100,20 @@ function dessiner(){
     }
 }
 
-
+let couleurs = [
+    {snake: "gray", nourriture: "#ff0000ff",fond: "#9BBA5A"},
+    {snake: "#228B22", nourriture: "#32CD32",fond: "#9BBA5A"},
+    {snake: "#8B4513", nourriture: "#D2691E",fond: "#F4A460"}
+]
 
 function dessiner_niveau2(){   
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
-    ctx.fillStyle = "gray";
+    ctx.fillStyle = couleurs[niveau-2].snake;
     for(let i=0;i<snake.length;i++){
     ctx.fillRect(snake[i].x,snake[i].y,20,20); //dessine le snake entier
     }
 
-    ctx.fillStyle = "#ff0000ff";
+    ctx.fillStyle = couleurs[niveau-2].nourriture;
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
 }
 
@@ -172,11 +176,11 @@ function jeu(){
         if (x_suivante >= 400 || x_suivante < 0 || y_suivante >= 400 || y_suivante < 0) {
             if (x_suivante >= 400 && changement_niveau){
                 changement_niveau=false;
-                niveau=2;
+                niveau=niveau+1; //passe au niveau suivant
                 x_suivante=0;
                 directionX=20;
                 directionY=0;
-                document.body.style.backgroundColor = "#9BBA5A";
+                document.body.style.backgroundColor = couleurs[niveau-2].fond;
                 nourritureX = Math.floor(Math.random() * 20) * 20;
                 nourritureY = Math.floor(Math.random() * 20) * 20;
                 dessiner_niveau2()
