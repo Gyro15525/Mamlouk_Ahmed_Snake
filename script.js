@@ -25,6 +25,9 @@ function start(){             //fonction pour start
 }
 function pause(){           //fonction pour pause
     avance = false;
+    dessiner_niveau();
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0,0,400,400);
 }
 
 document.getElementById("start").addEventListener("click",start);  //jai associe le bouton start a la fonction start
@@ -50,6 +53,11 @@ function clavier(x){    //fonction pour gerer linput du clavier
         } 
         else {
             avance = !avance;
+            if (avance===false){ 
+                dessiner_niveau();
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillRect(0,0,400,400);
+            }
         }
         return;
     }
@@ -80,27 +88,65 @@ document.addEventListener('keydown', clavier); //va passer un objet qui conttien
 
 
 
+let labyrinthe = [
+    {x: 11, y: 8}, {x: 8, y: 11}, {x: 11, y: 11}, {x: 8, y: 8},
+    
+    {x: 4, y: 4}, {x: 5, y: 4}, {x: 4, y: 5},
+    {x: 14, y: 4}, {x: 15, y: 4}, {x: 15, y: 5},
+    {x: 4, y: 14}, {x: 5, y: 15}, {x: 4, y: 15},
+    {x: 14, y: 15}, {x: 15, y: 14}, {x: 15, y: 15},
+    
+    {x: 4, y: 8}, {x: 4, y: 9}, {x: 4, y: 10}, {x: 4, y: 11},
+    {x: 15, y: 8}, {x: 15, y: 9}, {x: 15, y: 10}, {x: 15, y: 11},
+    {x: 8, y: 4}, {x: 9, y: 4}, {x: 10, y: 4}, {x: 11, y: 4},
+    {x: 8, y: 15}, {x: 9, y: 15}, {x: 10, y: 15}, {x: 11, y: 15}
+];
+let colonnes = [
+    {x: 6, y: 4}, {x: 6, y: 5}, {x: 6, y: 6}, {x: 6, y: 7}, {x: 6, y: 8},
+    {x: 8, y: 4}, {x: 8, y: 5}, {x: 8, y: 6}, {x: 8, y: 7}, {x: 8, y: 8},
+    {x: 10, y: 4}, {x: 10, y: 5}, {x: 10, y: 6}, {x: 10, y: 7}, {x: 10, y: 8},
+    {x: 12, y: 4}, {x: 12, y: 5}, {x: 12, y: 6}, {x: 12, y: 7}, {x: 12, y: 8},
+    {x: 14, y: 12}, {x: 14, y: 13}, {x: 14, y: 14}, {x: 14, y: 15}, {x: 14, y: 16},
+    {x: 11, y: 12}, {x: 11, y: 13}, {x: 11, y: 14}, {x: 11, y: 15}, {x: 11, y: 16},
+    {x: 7, y: 12}, {x: 7, y: 13}, {x: 7, y: 14}, {x: 7, y: 15}, {x: 7, y: 16},
+    {x: 4, y: 12}, {x: 4, y: 13}, {x: 4, y: 14}, {x: 4, y: 15}, {x: 4, y: 16}
+
+];
+let coins = [
+    {x:3, y:4}, {x:4, y:3}, {x: 4, y: 4}, {x: 5, y: 4}, {x: 4, y: 5},
+    {x: 17, y: 4}, {x: 16, y: 3}, {x: 15, y: 4}, {x: 16, y: 4}, {x: 16, y: 5},
+    {x: 3, y: 15}, {x: 4, y: 14}, {x: 4, y: 15}, {x: 5, y: 15}, {x: 4, y: 16},
+    {x: 17, y: 15}, {x: 16, y: 14}, {x: 15, y: 15}, {x: 16, y: 15}, {x: 16, y: 16}
+];
 
 
-function dessiner(){
-    ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
-    ctx.fillStyle = "#000000";
-    for(let i=0;i<snake.length;i++){
-        ctx.beginPath();
-        ctx.roundRect(snake[i].x,snake[i].y,20,20,5); //dessine le snake entier
-        ctx.fill();
-    }
-    if (changement_niveau===false){
-    ctx.fillStyle = "#444444";
-    ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
-    }
-    if (changement_niveau) {
-        ctx.fillStyle = "rgba(234, 2, 255, 0.3)";
-        ctx.fillRect(395, 0, 5, 400);
-    }
-}
+let zigzag = [
+    {x: 5, y: 8}, {x: 6, y: 8}, {x: 7, y: 8}, {x: 7, y: 9}, {x: 8, y: 9}, {x: 9, y: 9}, {x: 9, y: 10}, {x: 10, y: 10}, {x: 11, y: 10}, {x: 11, y: 11}, {x: 12, y: 11}, {x: 13, y: 11},
+    {x: 7, y: 5}, {x: 8, y: 5}, {x: 9, y: 5}, {x: 9, y: 6}, {x: 10, y: 6}, {x: 11, y: 6}, {x: 11, y: 7}, {x: 12, y: 7}, {x: 13, y: 7}, {x: 13, y: 8}, {x: 14, y: 8}, {x: 15, y: 8},
+    {x: 3, y: 11}, {x: 4, y: 11}, {x: 5, y: 11}, {x: 5, y: 12}, {x: 6, y: 12}, {x: 7, y: 12}, {x: 7, y: 13}, {x: 8, y: 13}, {x: 9, y: 13}, {x: 9, y: 14}, {x: 10, y: 14}, {x: 11, y: 14}
+    
+];
+
+let points = [
+    {x: 5, y: 5}, {x: 15, y: 5}, {x: 5, y: 15}, {x: 15, y: 15},
+    {x: 10, y: 10}, {x: 8, y: 8}, {x: 12, y: 12}, {x: 8, y: 12}, {x: 12, y: 8}
+];
+let liste_structures = [[], labyrinthe , colonnes, coins, zigzag, points];
+
+let obstacles_actuel = [];
+
+
+
+
+
+
+
+
+
+
 let couleur_boucle=0;
 let couleurs = [
+    {snake: "#000000", nourriture: "#444444", fond: "#87CEEB"},
     {snake: "gray", nourriture: "#ff0000ff",fond: "#9BBA5A"},
     {snake: "#efefefff", nourriture: "#c170c8ff",fond: "#876ff0ff"},
     {snake: "#8B4513", nourriture: "#D2691E",fond: "#F4A460"},
@@ -109,7 +155,7 @@ let couleurs = [
     {snake: "#2F4F4F", nourriture: "#708090",fond: "#B0C4DE"}
 ]
 
-function dessiner_niveau2(){   
+function dessiner_niveau(){   
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
     ctx.fillStyle = couleurs[couleur_boucle].snake;
     for(let i=0;i<snake.length;i++){
@@ -122,6 +168,12 @@ function dessiner_niveau2(){
     if (changement_niveau) {
         ctx.fillStyle = "rgba(234, 2, 255, 0.3)";
         ctx.fillRect(395, 0, 5, 400);
+    }
+    for (let i=0;i<obstacles_actuel.length;i++){                  
+        ctx.fillStyle = "#37817fff";
+        ctx.beginPath();
+        ctx.roundRect(obstacles_actuel[i].x*20,obstacles_actuel[i].y*20,20,20,5); //dessine le snake entier
+        ctx.fill();
     }
 }
 
@@ -138,7 +190,7 @@ function recommence() { //fonction pour recommencer le jeu
     vitesse = 100;
     niveau = 1;
     document.getElementById("score").innerText = score;
-    document.getElementById("vitesse").innerText = vitesse;
+    document.getElementById("vitesse").innerText = "+" + (vitesse-100) + "%";
     nourritureX = 200;
     nourritureY = 200;
     perdu = false;
@@ -148,20 +200,21 @@ function recommence() { //fonction pour recommencer le jeu
     changement_niveau=false;
     vitesse_snake = 200;
     document.body.style.backgroundColor = "#87CEEB";
-    dessiner();
+    couleur_boucle=0;
+    document.getElementById("start").style.color = couleurs[couleur_boucle].fond;
+    document.getElementById("pause").style.color = couleurs[couleur_boucle].fond;
+    document.getElementById("niveau").innerText = niveau;
+    obstacles_actuel =[];
+    dessiner_niveau();
     jeu();
 }
 
 function perdre(){
-    if (niveau > 1){
-        dessiner_niveau2();
-    }
-    else
-    dessiner();
+    dessiner_niveau();
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0,0,400,400);
     ctx.fillStyle = couleurs[couleur_boucle].fond; //game over adapte a la couleur du niveau
-    ctx.font = "40px Arial";
+    ctx.font = "bold 40px 'Courier New', monospace";
     ctx.fillText("Game Over", 90, 200);
     if (score > meilleur_score) {
         meilleur_score = score;
@@ -176,6 +229,7 @@ function perdre(){
 let decalage_corps=0;
 let x_suivante=0;
 let y_suivante=0;
+let valide=false;
 function jeu(){
     change_direction = false;
     if(avance === true && perdu === false){  //si le jeu nest pas en pause   
@@ -193,11 +247,19 @@ function jeu(){
                 x_suivante=0;
                 directionX=20;
                 directionY=0;
-                couleur_boucle=(niveau-2)% couleurs.length;
+                valide=false;
+                couleur_boucle=(niveau-1)% couleurs.length;
                 document.body.style.backgroundColor = couleurs[couleur_boucle].fond;
-                nourritureX = Math.floor(Math.random() * 20) * 20;
-                nourritureY = Math.floor(Math.random() * 20) * 20;
-                dessiner_niveau2()
+                document.getElementById("start").style.color = couleurs[couleur_boucle].fond;
+                document.getElementById("pause").style.color = couleurs[couleur_boucle].fond;
+                obstacles_actuel = liste_structures[(niveau - 1) % liste_structures.length];
+                for (let i = 0; i < obstacles_actuel.length; i++) {
+                    while (nourritureX === obstacles_actuel[i].x * 20 && nourritureY === obstacles_actuel[i].y * 20) {
+                        nourritureX = Math.floor(Math.random() * 20) * 20;
+                        nourritureY = Math.floor(Math.random() * 20) * 20;
+                    }
+                }
+                dessiner_niveau()
             }
             else{
             avance = false;
@@ -215,6 +277,14 @@ function jeu(){
                 return;
             }
         }
+        for (let i = 0; i < obstacles_actuel.length; i++) {
+            if (x_suivante === obstacles_actuel[i].x * 20 && y_suivante === obstacles_actuel[i].y * 20) {
+                avance = false;
+                perdu = true;
+                perdre();
+                return;
+            }
+        }
         for(let i=1;i<snake.length;i++){
             snake[snake.length-i].x=snake[snake.length-i-1].x;//le corps prend la position precedente de la tete
             snake[snake.length-i].y=snake[snake.length-i-1].y;
@@ -225,15 +295,30 @@ function jeu(){
         snake[0].y=y_suivante;
 
         if(snake[0].x===nourritureX && snake[0].y===nourritureY){ //je verifie si le snake a mange la nourriture
+            if (changement_niveau === false){ //jai change cette condition pour empecher de gagner des points avec une nourriture invisible
             score=score+20;
             document.getElementById("score").innerText = score; //met a jour le score dans le html
-            if (changement_niveau === false){
             nourritureX=Math.floor(Math.random()*20)*20; 
             nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
-            for (let i=0;i<snake.length;i++){
-                while (nourritureX===snake[i].x && nourritureY ===snake[i].y){ //tant que la nourriture est sur le snake
-                    nourritureX=Math.floor(Math.random()*20)*20;  //je creer une autre position pour nourriture
-                    nourritureY=Math.floor(Math.random()*20)*20; 
+            valide=false;
+            while(valide===false){  //jai corrige un probleme ou la nourriture pouvait spawn sur le snake
+                valide=true;
+                for (let i=0;i<snake.length;i++){
+                    while (nourritureX===snake[i].x && nourritureY ===snake[i].y){ //tant que la nourriture est sur le snake
+                        nourritureX=Math.floor(Math.random()*20)*20;  //je creer une autre position pour nourriture
+                        nourritureY=Math.floor(Math.random()*20)*20; 
+                }
+                }
+                for (let i = 0; i < obstacles_actuel.length; i++) {
+                        while (nourritureX === obstacles_actuel[i].x * 20 && nourritureY === obstacles_actuel[i].y * 20) {
+                            nourritureX = Math.floor(Math.random() * 20) * 20;
+                            nourritureY = Math.floor(Math.random() * 20) * 20;
+                        }
+                    }
+                for (let i=0;i<snake.length;i++){
+                if (nourritureX===snake[i].x && nourritureY ===snake[i].y){
+                    valide=false;
+                }
                 }
             }
             snake.push({x:snake[snake.length-1].x,y:snake[snake.length-1].y}); //ajoute un segment
@@ -241,19 +326,14 @@ function jeu(){
             if (compte_nourriture % 5 ===0){
             vitesse_snake=vitesse_snake*0.97;
             vitesse = Math.floor((200 / vitesse_snake)*100);
-            document.getElementById("vitesse").innerText = vitesse + "%"; //met a jour la vitesse dans le html
+            document.getElementById("vitesse").innerText = "+" + (vitesse-100) + "%"; //met a jour la vitesse dans le html
             }
             }
         }
         if ((score >= (niveau*100))){
             changement_niveau=true;
         }
-        if (niveau > 1){
-            dessiner_niveau2();
-        }
-        else {
-        dessiner();
-        }
+        dessiner_niveau();
     }
     setTimeout(jeu, vitesse_snake); //je recommence la fonction
 }
