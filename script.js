@@ -84,6 +84,17 @@ function clavier(x){    //fonction pour gerer linput du clavier
 }
 document.addEventListener('keydown', clavier); //va passer un objet qui conttient des infos sur la touche appuyee
 
+let bonusX=-20;
+let bonusY=-20;
+let temps=0;
+let etat=false;
+
+let son_nourriture=['bip1.mp3', 'bip2.mp3', 'bip3.mp3', 'bip4.mp3', 'bip5.mp3']; //effet dans le dossier
+let num_son = 0;
+function son() {
+    new Audio(son_nourriture[num_son]).play();    //joue les mp3
+    num_son = (num_son + 1) % son_nourriture.length; //parcour le tableau contenant les nom des .mp3
+}
 
 
 
@@ -131,7 +142,7 @@ let points = [
     {x: 5, y: 5}, {x: 15, y: 5}, {x: 5, y: 15}, {x: 15, y: 15},
     {x: 10, y: 10}, {x: 8, y: 8}, {x: 12, y: 12}, {x: 8, y: 12}, {x: 12, y: 8}
 ];
-let liste_structures = [[], labyrinthe , colonnes, coins, zigzag, points];
+let liste_structures = [[], labyrinthe , colonnes, coins, zigzag, points]; //tableau contenant les tableaux predefnies
 
 let obstacles_actuel = [];
 
@@ -144,17 +155,17 @@ let obstacles_actuel = [];
 
 
 
-let couleur_boucle=0;
+let couleur_boucle=0; //le numero qui va parcourir couleurs
 let couleurs = [
-    {snake: "#000000", nourriture: "#444444", fond: "#87CEEB"},
-    {snake: "gray", nourriture: "#ff0000ff",fond: "#9BBA5A"},
-    {snake: "#efefefff", nourriture: "#c170c8ff",fond: "#876ff0ff"},
-    {snake: "#8B4513", nourriture: "#D2691E",fond: "#F4A460"},
-    {snake: "#4B0082", nourriture: "#8A2BE2",fond: "#D8BFD8"},
-    {snake: "#FF8C00", nourriture: "#FFA500",fond: "#FFD700"},
-    {snake: "#2F4F4F", nourriture: "#708090",fond: "#B0C4DE"}
+    {snake: "#000000", nourriture: "#444444", fond: "#87CEEB", obstacles: "#015f6bff"},
+    {snake: "#efefefff", nourriture: "#c170c8ff",fond: "#876ff0ff", obstacles: "#6c3e79ff"},
+    {snake: "gray", nourriture: "#ff0000ff",fond: "#9BBA5A", obstacles: "#005f26ff"},
+    {snake: "#8B4513", nourriture: "#D2691E",fond: "#F4A460", obstacles: "#acbf00ff"},
+    {snake: "#4B0082", nourriture: "#8A2BE2",fond: "#D8BFD8", obstacles: "#444444ff"},
+    {snake: "#FF8C00", nourriture: "#FFA500",fond: "#FFD700", obstacles: "#6c6c68ff"},
+    {snake: "#2F4F4F", nourriture: "#708090",fond: "#B0C4DE", obstacles: "#015f6bff"}
 ]
-
+let taille_bonus=20;
 function dessiner_niveau(){   
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
     ctx.fillStyle = couleurs[couleur_boucle].snake;
@@ -166,14 +177,28 @@ function dessiner_niveau(){
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
     }
     if (changement_niveau) {
-        ctx.fillStyle = "rgba(234, 2, 255, 0.3)";
-        ctx.fillRect(395, 0, 5, 400);
+        ctx.fillStyle = couleurs[couleur_boucle].obstacles;
+        ctx.fillRect(395, 0, 5, 400);  //portail pour passage de niveau
+        ctx.fillStyle = couleurs[couleur_boucle].obstacles;
+        ctx.font = "bold 40px Arial";
+        for (let i = 0; i < 5; i++) {
+            ctx.fillText("→", 350, 50 + i * 80);  //fleches pour rendre le portail plus visible
+        }
     }
     for (let i=0;i<obstacles_actuel.length;i++){                  
-        ctx.fillStyle = "#37817fff";
+        ctx.fillStyle = couleurs[couleur_boucle].obstacles;
         ctx.beginPath();
         ctx.roundRect(obstacles_actuel[i].x*20,obstacles_actuel[i].y*20,20,20,5); //dessine le snake entier
         ctx.fill();
+    }
+    if(etat===true){
+        if (temps % 5 === 0) {  //pulsation en utilisant temp chaque 5*200=1000ms=1s
+            taille = 18;  
+        } else {
+            taille = 22;  
+        }
+        ctx.fillStyle = "#FFD700";
+        ctx.fillRect(bonusX+(20-taille),bonusY+(20-taille),taille,taille);
     }
 }
 
@@ -183,7 +208,7 @@ function dessiner_niveau(){
 
 
 function recommence() { //fonction pour recommencer le jeu
-    snake = [{x: 0, y: 0}, {x: 0, y: 0}, {x:0, y:0}];
+    snake = [{x: 0, y: 0}, {x: 0, y: 0}, {x:0, y:0}];// je reinitialise tout
     directionX = 20;
     directionY = 0;
     score = 0;
@@ -193,6 +218,10 @@ function recommence() { //fonction pour recommencer le jeu
     document.getElementById("vitesse").innerText = "+" + (vitesse-100) + "%";
     nourritureX = 200;
     nourritureY = 200;
+    bonusX=-20;
+    bonusY=-20;
+    etat=false;
+    temps=0;
     perdu = false;
     avance = true;
     compte_nourriture = 0;
@@ -200,11 +229,12 @@ function recommence() { //fonction pour recommencer le jeu
     changement_niveau=false;
     vitesse_snake = 200;
     document.body.style.backgroundColor = "#87CEEB";
-    couleur_boucle=0;
-    document.getElementById("start").style.color = couleurs[couleur_boucle].fond;
+    couleur_boucle=0; //num danstableau couleurs
+    document.getElementById("start").style.color = couleurs[couleur_boucle].fond; //ils sadaptent a la couleur de fond
     document.getElementById("pause").style.color = couleurs[couleur_boucle].fond;
     document.getElementById("niveau").innerText = niveau;
     obstacles_actuel =[];
+    num_son = 0;
     dessiner_niveau();
     jeu();
 }
@@ -220,9 +250,7 @@ function perdre(){
         meilleur_score = score;
         localStorage.setItem('snakeMeilleurScore', score); // sauvegarder le score dans le stockage local
         document.getElementById("meilleur").innerText = meilleur_score;
-    }
-    if (score === meilleur_score) {
-        ctx.fillStyle = "#6fa1d7ff";
+        ctx.fillStyle = "#6fa1d7ff"; //corrige un if inutile
         ctx.fillText(" NOUVEAU RECORD ", 10, 240);
     }
 }
@@ -230,36 +258,115 @@ let decalage_corps=0;
 let x_suivante=0;
 let y_suivante=0;
 let valide=false;
+let v2=false;
+function passage_niveau(){
+    changement_niveau=false;
+    niveau=niveau+1; //passe au niveau suivant
+    document.getElementById("niveau").classList.add('augmentation-animation');                                   //animation pour passage de niveau
+    setTimeout(() => {document.getElementById("niveau").classList.remove('augmentation-animation');}, 300);
+    document.getElementById("niveau").innerText = niveau; //met a jour le niveau dans le html
+    decalage_corps=400;            //jai resolu le probleme de transition du snake entre les niveaux en decalant tout le corps du snake
+    for (let i = 0; i < snake.length; i++) {
+        snake[i].x = snake[i].x - decalage_corps;
+    }
+    x_suivante=0;
+    directionX=20;
+    directionY=0;
+    valide=false;
+    v2=false;
+    couleur_boucle=(niveau-1)% couleurs.length;  //on determine le numero de couleur pour le tableau coleurs par rapport au niveau
+    document.body.style.backgroundColor = couleurs[couleur_boucle].fond; 
+    document.getElementById("start").style.color = couleurs[couleur_boucle].fond; //les boutonssadaptent au fond
+    document.getElementById("pause").style.color = couleurs[couleur_boucle].fond;
+    obstacles_actuel = liste_structures[(niveau - 1) % liste_structures.length];
+    while(v2 ===false){    // jai remplace pour eviter que la nourritre soit cree en i-1 lorsque la boucle est en i
+        v2=true;
+        nourritureX = Math.floor(Math.random() * 20) * 20;
+        nourritureY = Math.floor(Math.random() * 20) * 20;
+        for (let i = 0; i < obstacles_actuel.length; i++) {
+            if (nourritureX === obstacles_actuel[i].x * 20 && nourritureY === obstacles_actuel[i].y * 20) {
+                v2=false;
+            }
+        }
+    }
+    if (Math.random() < 0.3) { // une chance 30% lors du passage de niveau
+        etat=true;
+        v2=false;
+        while(v2===false){
+            v2=true;
+            bonusX = Math.floor(Math.random() * 20) * 20;
+            bonusY = Math.floor(Math.random() * 20) * 20;
+            for (let i = 0; i < obstacles_actuel.length; i++) {
+                if (bonusX === obstacles_actuel[i].x * 20 && bonusY === obstacles_actuel[i].y * 20) {
+                    v2=false;
+                }
+            }
+         }
+
+    }
+    dessiner_niveau()
+}
+function nourriture_mangee(){
+if (changement_niveau === false){ //jai change cette condition pour empecher de gagner des points avec une nourriture invisible
+    score=score+20;
+    son();
+
+    document.getElementById("score").classList.add('augmentation-animation');                                   //animation pour gain de score
+    setTimeout(() => {document.getElementById("score").classList.remove('augmentation-animation');}, 300);
+
+    document.getElementById("score").innerText = score; //met a jour le score dans le html
+    valide=false;
+    while(valide===false){  //jai corrige un probleme ou la nourriture pouvait spawn sur le snake
+        valide=true;
+        nourritureX=Math.floor(Math.random()*20)*20;  //je creer une autre position pour nourriture
+        nourritureY=Math.floor(Math.random()*20)*20; 
+        for (let i=0;i<snake.length;i++){
+            if (nourritureX===snake[i].x && nourritureY ===snake[i].y){ //tant que la nourriture est sur le snake
+                valide=false;
+            }
+        }
+        for (let i = 0; i < obstacles_actuel.length; i++) {
+            if (nourritureX === obstacles_actuel[i].x * 20 && nourritureY === obstacles_actuel[i].y * 20) {
+                        valide=false;
+            }
+        }
+        if(nourritureX===bonusX && nourritureY===bonusY){
+            valide=false;
+        }
+    }
+    snake.push({x:snake[snake.length-1].x,y:snake[snake.length-1].y}); //ajoute un segment
+    compte_nourriture=compte_nourriture+1;
+    if (compte_nourriture % 5 ===0){
+        vitesse_snake=vitesse_snake*0.97;
+        vitesse = Math.floor((200 / vitesse_snake)*100);
+        document.getElementById("vitesse").classList.add('augmentation-animation');                                   //animation pour gain de vitesse
+        setTimeout(() => {document.getElementById("vitesse").classList.remove('augmentation-animation');}, 300);
+        document.getElementById("vitesse").innerText = "+" + (vitesse-100) + "%"; //met a jour la vitesse dans le html
+    }
+}
+}
+function bonus_mangee(){
+    score = score + 50;
+    new Audio("bonus.mp3").play();
+    vitesse_snake = vitesse_snake * 1.03;  // je ralenti le snake
+    vitesse = Math.floor((200 / vitesse_snake) * 100);
+    document.getElementById("score").classList.add('augmentation-animation');                                   //animation pour gain de score
+    setTimeout(() => {document.getElementById("score").classList.remove('augmentation-animation');}, 300);
+    document.getElementById("score").innerText = score;
+    document.getElementById("vitesse").classList.add('diminution-animation');                                   //animation pour perte de vitesse
+    setTimeout(() => {document.getElementById("vitesse").classList.remove('diminution-animation');}, 300);
+    document.getElementById("vitesse").innerText = "+" + (vitesse - 100) + "%";
+    bonusX = -20;
+    bonusY = -20;
+}
 function jeu(){
     change_direction = false;
     if(avance === true && perdu === false){  //si le jeu nest pas en pause   
         x_suivante=snake[0].x+directionX;
         y_suivante=snake[0].y+directionY;
-        if (x_suivante >= 400 || x_suivante < 0 || y_suivante >= 400 || y_suivante < 0) {
+        if (x_suivante >= 400 || x_suivante < 0 || y_suivante >= 400 || y_suivante < 0) { //collision avec bodure du canva
             if (x_suivante >= 400 && changement_niveau){
-                changement_niveau=false;
-                niveau=niveau+1; //passe au niveau suivant
-                document.getElementById("niveau").innerText = niveau; //met a jour le niveau dans le html
-                decalage_corps=400;            //jai resolu le probleme de transition du snake entre les niveaux en decalant tout le corps du snake
-                for (let i = 0; i < snake.length; i++) {
-                    snake[i].x = snake[i].x - decalage_corps;
-                }
-                x_suivante=0;
-                directionX=20;
-                directionY=0;
-                valide=false;
-                couleur_boucle=(niveau-1)% couleurs.length;
-                document.body.style.backgroundColor = couleurs[couleur_boucle].fond;
-                document.getElementById("start").style.color = couleurs[couleur_boucle].fond;
-                document.getElementById("pause").style.color = couleurs[couleur_boucle].fond;
-                obstacles_actuel = liste_structures[(niveau - 1) % liste_structures.length];
-                for (let i = 0; i < obstacles_actuel.length; i++) {
-                    while (nourritureX === obstacles_actuel[i].x * 20 && nourritureY === obstacles_actuel[i].y * 20) {
-                        nourritureX = Math.floor(Math.random() * 20) * 20;
-                        nourritureY = Math.floor(Math.random() * 20) * 20;
-                    }
-                }
-                dessiner_niveau()
+                passage_niveau();
             }
             else{
             avance = false;
@@ -295,43 +402,23 @@ function jeu(){
         snake[0].y=y_suivante;
 
         if(snake[0].x===nourritureX && snake[0].y===nourritureY){ //je verifie si le snake a mange la nourriture
-            if (changement_niveau === false){ //jai change cette condition pour empecher de gagner des points avec une nourriture invisible
-            score=score+20;
-            document.getElementById("score").innerText = score; //met a jour le score dans le html
-            nourritureX=Math.floor(Math.random()*20)*20; 
-            nourritureY=Math.floor(Math.random()*20)*20;//je genere une nouvelle position aleatoire pour la nourriture
-            valide=false;
-            while(valide===false){  //jai corrige un probleme ou la nourriture pouvait spawn sur le snake
-                valide=true;
-                for (let i=0;i<snake.length;i++){
-                    while (nourritureX===snake[i].x && nourritureY ===snake[i].y){ //tant que la nourriture est sur le snake
-                        nourritureX=Math.floor(Math.random()*20)*20;  //je creer une autre position pour nourriture
-                        nourritureY=Math.floor(Math.random()*20)*20; 
-                }
-                }
-                for (let i = 0; i < obstacles_actuel.length; i++) {
-                        while (nourritureX === obstacles_actuel[i].x * 20 && nourritureY === obstacles_actuel[i].y * 20) {
-                            nourritureX = Math.floor(Math.random() * 20) * 20;
-                            nourritureY = Math.floor(Math.random() * 20) * 20;
-                        }
-                    }
-                for (let i=0;i<snake.length;i++){
-                if (nourritureX===snake[i].x && nourritureY ===snake[i].y){
-                    valide=false;
-                }
-                }
-            }
-            snake.push({x:snake[snake.length-1].x,y:snake[snake.length-1].y}); //ajoute un segment
-            compte_nourriture=compte_nourriture+1;
-            if (compte_nourriture % 5 ===0){
-            vitesse_snake=vitesse_snake*0.97;
-            vitesse = Math.floor((200 / vitesse_snake)*100);
-            document.getElementById("vitesse").innerText = "+" + (vitesse-100) + "%"; //met a jour la vitesse dans le html
-            }
-            }
+            nourriture_mangee();
         }
-        if ((score >= (niveau*100))){
+        if(snake[0].x===bonusX && snake[0].y===bonusY){
+            bonus_mangee();
+        }
+        if ((compte_nourriture+1) % 6 ===0){
             changement_niveau=true;
+            compte_nourriture=compte_nourriture+1;
+        }
+        if(temps===30){ //apres une periode le bonus va disparaitre
+            etat=false;
+            bonusX=-20;
+            bonusY=-20;
+            temps=0
+        }
+        if(etat===true){
+            temps=temps+1
         }
         dessiner_niveau();
     }
