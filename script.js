@@ -95,26 +95,34 @@ function dessiner(){
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
     }
     if (changement_niveau) {
-        ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+        ctx.fillStyle = "rgba(234, 2, 255, 0.3)";
         ctx.fillRect(395, 0, 5, 400);
     }
 }
-
+let couleur_boucle=0;
 let couleurs = [
     {snake: "gray", nourriture: "#ff0000ff",fond: "#9BBA5A"},
-    {snake: "#228B22", nourriture: "#32CD32",fond: "#9BBA5A"},
-    {snake: "#8B4513", nourriture: "#D2691E",fond: "#F4A460"}
+    {snake: "#efefefff", nourriture: "#c170c8ff",fond: "#876ff0ff"},
+    {snake: "#8B4513", nourriture: "#D2691E",fond: "#F4A460"},
+    {snake: "#4B0082", nourriture: "#8A2BE2",fond: "#D8BFD8"},
+    {snake: "#FF8C00", nourriture: "#FFA500",fond: "#FFD700"},
+    {snake: "#2F4F4F", nourriture: "#708090",fond: "#B0C4DE"}
 ]
 
 function dessiner_niveau2(){   
     ctx.clearRect(0,0,400,400); //reinitalise le canvas pour effacer le snake precedent
-    ctx.fillStyle = couleurs[niveau-2].snake;
+    ctx.fillStyle = couleurs[couleur_boucle].snake;
     for(let i=0;i<snake.length;i++){
     ctx.fillRect(snake[i].x,snake[i].y,20,20); //dessine le snake entier
     }
-
-    ctx.fillStyle = couleurs[niveau-2].nourriture;
+    if (changement_niveau===false){
+    ctx.fillStyle = couleurs[couleur_boucle].nourriture;
     ctx.fillRect(nourritureX,nourritureY,20,20); //dessine la nourriture 20 x 20 en nourritureX nourritureY
+    }
+    if (changement_niveau) {
+        ctx.fillStyle = "rgba(234, 2, 255, 0.3)";
+        ctx.fillRect(395, 0, 5, 400);
+    }
 }
 
 
@@ -145,14 +153,14 @@ function recommence() { //fonction pour recommencer le jeu
 }
 
 function perdre(){
-    if (niveau===2){
+    if (niveau > 1){
         dessiner_niveau2();
     }
     else
     dessiner();
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0,0,400,400);
-    ctx.fillStyle = "#87CEEB";
+    ctx.fillStyle = couleurs[couleur_boucle].fond; //game over adapte a la couleur du niveau
     ctx.font = "40px Arial";
     ctx.fillText("Game Over", 90, 200);
     if (score > meilleur_score) {
@@ -165,7 +173,7 @@ function perdre(){
         ctx.fillText(" NOUVEAU RECORD ", 10, 240);
     }
 }
-
+let decalage_corps=0;
 let x_suivante=0;
 let y_suivante=0;
 function jeu(){
@@ -177,10 +185,16 @@ function jeu(){
             if (x_suivante >= 400 && changement_niveau){
                 changement_niveau=false;
                 niveau=niveau+1; //passe au niveau suivant
+                document.getElementById("niveau").innerText = niveau; //met a jour le niveau dans le html
+                decalage_corps=400;            //jai resolu le probleme de transition du snake entre les niveaux en decalant tout le corps du snake
+                for (let i = 0; i < snake.length; i++) {
+                    snake[i].x = snake[i].x - decalage_corps;
+                }
                 x_suivante=0;
                 directionX=20;
                 directionY=0;
-                document.body.style.backgroundColor = couleurs[niveau-2].fond;
+                couleur_boucle=(niveau-2)% couleurs.length;
+                document.body.style.backgroundColor = couleurs[couleur_boucle].fond;
                 nourritureX = Math.floor(Math.random() * 20) * 20;
                 nourritureY = Math.floor(Math.random() * 20) * 20;
                 dessiner_niveau2()
@@ -231,10 +245,10 @@ function jeu(){
             }
             }
         }
-        if (score >=100 && niveau===1){
+        if ((score >= (niveau*100))){
             changement_niveau=true;
         }
-        if (niveau===2){
+        if (niveau > 1){
             dessiner_niveau2();
         }
         else {
