@@ -76,6 +76,9 @@ let perdu = false;
 
 function start(){             //fonction pour start
     avance = true;
+    if (perdu) {
+        recommence();  // Si perdu alors recommencer
+    } 
 }
 function pause(){           //fonction pour pause
     avance = false;
