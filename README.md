@@ -1,6 +1,7 @@
 # Mamlouk_Ahmed_Snake
 Jeu Snake avancé (avec niveaux) - Snake avec vitesse croissante, obstacles et bonus. Score et meilleurs scores locaux. Animations CSS. Travail sur Canvas, DOM et logique avancée.
-Jeu Snake Évolutif - Une version avancée du jeu classique Snake avec système de niveaux, obstacles, bonus et classement. Le serpent évolue à travers différents environnements avec des défis croissants.
+
+Jeu Snake Évolutif - Une version avancée du jeu classique Snake avec système de niveaux avec portails, obstacles, bonus et classement. Le serpent évolue à travers différents environnements avec des défis croissants.
 
 Technologies utilisées
   HTML5 : Structure de la page avec canvas pour le jeu
