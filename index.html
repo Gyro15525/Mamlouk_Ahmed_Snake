@@ -7,35 +7,36 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>JEU SNAKE</h1>
-    
-    <div>
-        <div>
-            <span>Score: <span id="score">0</span></span>
+    <div class="conteneur">
+        <div class="section_jeux">
+            <h1>JEU SNAKE</h1>
+            
+            <div class="information">
+                <span>Score: <span id="score">0</span></span>
+                <span>Vitesse: <span id="vitesse">+0%</span></span>
+                <span>Meilleur: <span id="meilleur">0</span></span>
+                <span>Niveau: <span id="niveau">1</span></span>
+            </div>
+            
+            <canvas id="Canvas" width="400" height="400"></canvas>
+            
+            <div>
+                <button id="start">▶ Démarrer</button>
+                <button id="pause">⏸ Pause</button>
+            </div>
+            
+            <div class="instructions">
+                <p>Utilisez les fleches pour controler le serpent</p>
+                <p>Appuyez sur ESPACE pour pause/recommencer</p>
+            </div>
         </div>
-        <div>
-            <span>Vitesse: <span id="vitesse">+0%</span></span>
-        </div>
-        <div>
-            <span>Meilleur: <span id="meilleur">0</span></span>
-        </div>
-        <div>
-            <span>Niveau: <span id="niveau">1</span></span>
+        
+        <div class="section_rang">
+            <h2>TOP 18</h2>
+            <div id="rang-list"></div>
         </div>
     </div>
     
-    <canvas id="Canvas" width="400" height="400"></canvas>
-    
-    <div>
-        <button id="start">▶ Démarrer</button>
-        <button id="pause">⏸ Pause</button>
-    </div>
-
-    <div>
-        <p>Utilisez les fleches pour controler le serpent</p>
-        <p>Appuyez sur ESPACE pour pause/recommencer</p>
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>

@@ -9,6 +9,60 @@ if (localStorage.getItem('snakeMeilleurScore')) {
     document.getElementById("meilleur").innerText = meilleur_score;
 }
 
+
+let rang = JSON.parse(localStorage.getItem('classement') || '[]'); //converti le text en un objet js
+
+
+
+
+
+function ligne_classement(entree, indice) {
+    return `<div class="rang-ligne">${indice + 1}. ${entree.nom} - ${entree.score} - niveau: ${entree.niveau}</div>`;  //represente la ligne affichee avec les valeurs du niveau et nom et core et rang
+}
+function charger_classement() {        //met a jour laffichage du classement
+    const rangList = document.getElementById('rang-list');
+    
+    if (rang.length === 0) {
+        rangList.innerHTML = '<div class="rang-vide">Aucun score</div>';
+        return;
+    }
+    
+    let html = '';
+    rang.slice(0, 18).forEach((entree, indice) => {          //forEach donne deux variable une contenant lobjet et lautre le ranf de lobjet et ce rang a la meme signification que le rang du classment car on a fait rang.sort avec le scor
+        html += ligne_classement(entree, indice);
+    });
+    rangList.innerHTML = html;
+}
+let nom;
+function addScore() {
+    if (est_enregistre===false){
+        nom='Joueur';
+    }
+    else{
+        nom = prompt('Bravo! Entrez votre nom:')|| 'aucun nom entre';
+        if(nom==='aucun nom entre'){ //pour pouvoir appuyer sur n encore si on a pas entre de nom la derniere fois
+            est_enregistre= false;
+            return;
+        }
+    }
+    const existe_joueur = rang.find(entree => entree.nom === nom);//cherche dans le classmement pour le meme joueur
+    
+    if (existe_joueur) {  //si il existe
+        if (score > existe_joueur.score) { //je change seulement si le score atteint est meilleur quavant
+            rang = rang.filter(entree => entree.nom !== nom); //supprime lancienne ligne
+            rang.push({ nom, score, niveau });//ajoute un nouveau membre dans rang qui represente un noveau score avec le nom et niveau
+        }
+    } else {
+        rang.push({ nom, score, niveau });//ajoute un nouveau membre dans rang qui represente un noveau score avec le nom et niveau
+    }
+    
+    rang.sort((a, b) => b.score - a.score); //je les ordonne en ordre decroissant
+    rang = rang.slice(0, 18); //je limite le nombre de enregistrement a 30
+    
+    localStorage.setItem('classement', JSON.stringify(rang)); //enregistre les information sure le classement comme texte qui va etre reconverti en objet js au prochain refresh de la page avec JSON.parse
+    charger_classement();
+}
+
 let vitesse = 100;
 let vitesse_snake=200; //vitesse initiale du snake
 let compte_nourriture=0;
@@ -42,9 +96,13 @@ let snake = [
 let directionX=20; // variable pour la direction du snake
 let directionY=0;
 //la direction depend de linput du clavier
-
+let est_enregistre=false;
 let change_direction = false;
 function clavier(x){    //fonction pour gerer linput du clavier
+    if ((x.key === 'n' || x.key === 'N') && perdu && (est_enregistre===false)){
+        est_enregistre= true; //pour eviter que jenregistre plusieures fois
+        addScore();
+    }
     if (x.repeat) return;
     if (x.key ==' '){  //espace pour pause
         x.preventDefault();
@@ -144,7 +202,7 @@ let points = [
 ];
 let liste_structures = [[], labyrinthe , colonnes, coins, zigzag, points]; //tableau contenant les tableaux predefnies
 
-let obstacles_actuel = [];
+let obstacles_actuel = []; //on commence le jeux par un canva vide
 
 
 
@@ -206,8 +264,13 @@ function dessiner_niveau(){
 
 
 
-
+let premier=false; //true si le score est meilleur qui le meilleur score
 function recommence() { //fonction pour recommencer le jeu
+    if ((est_enregistre===false)&&premier){  //si le score est > meilleur et que pas de nom est enregistre
+        addScore();
+    }
+    est_enregistre=false;
+    premier=false
     snake = [{x: 0, y: 0}, {x: 0, y: 0}, {x:0, y:0}];// je reinitialise tout
     directionX = 20;
     directionY = 0;
@@ -235,9 +298,12 @@ function recommence() { //fonction pour recommencer le jeu
     document.getElementById("niveau").innerText = niveau;
     obstacles_actuel =[];
     num_son = 0;
+    charger_classement();
     dessiner_niveau();
     jeu();
 }
+
+
 
 function perdre(){
     dessiner_niveau();
@@ -247,13 +313,22 @@ function perdre(){
     ctx.font = "bold 40px 'Courier New', monospace";
     ctx.fillText("Game Over", 90, 200);
     if (score > meilleur_score) {
+        premier=true;
         meilleur_score = score;
         localStorage.setItem('snakeMeilleurScore', score); // sauvegarder le score dans le stockage local
         document.getElementById("meilleur").innerText = meilleur_score;
         ctx.fillStyle = "#6fa1d7ff"; //corrige un if inutile
         ctx.fillText(" NOUVEAU RECORD ", 10, 240);
     }
+    ctx.fillStyle = couleurs[couleur_boucle].snake;  //sadapte a la couleur du snake
+    ctx.font = "bold 20px 'Courier New', monospace";
+    ctx.fillText("Appuyez sur N pour", 80, 260);
+    ctx.fillText("sauvegarder votre score!", 50, 290)
 }
+
+
+
+
 let decalage_corps=0;
 let x_suivante=0;
 let y_suivante=0;
@@ -306,6 +381,9 @@ function passage_niveau(){
     }
     dessiner_niveau()
 }
+
+
+
 function nourriture_mangee(){
 if (changement_niveau === false){ //jai change cette condition pour empecher de gagner des points avec une nourriture invisible
     score=score+20;
@@ -345,6 +423,8 @@ if (changement_niveau === false){ //jai change cette condition pour empecher de 
     }
 }
 }
+
+
 function bonus_mangee(){
     score = score + 50;
     new Audio("bonus.mp3").play();
@@ -359,6 +439,8 @@ function bonus_mangee(){
     bonusX = -20;
     bonusY = -20;
 }
+
+
 function jeu(){
     change_direction = false;
     if(avance === true && perdu === false){  //si le jeu nest pas en pause   
@@ -425,4 +507,5 @@ function jeu(){
     setTimeout(jeu, vitesse_snake); //je recommence la fonction
 }
 
+charger_classement();
 jeu();
