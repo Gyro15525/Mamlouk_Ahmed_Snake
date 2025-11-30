@@ -6,6 +6,7 @@ body {
     color: #000000;
     transition: background-color 1s ease;
     margin: 0;
+    overflow: hidden; /*pour ne pas avoir de scrollbar*/
 }
 
 /* conteneur flex */

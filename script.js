@@ -251,12 +251,12 @@ function dessiner_niveau(){
     }
     if(etat===true){
         if (temps % 5 === 0) {  //pulsation en utilisant temp chaque 5*200=1000ms=1s
-            taille = 18;  
+            taille_bonus = 18;  
         } else {
-            taille = 22;  
+            taille_bonus = 22;  
         }
         ctx.fillStyle = "#FFD700";
-        ctx.fillRect(bonusX+(20-taille),bonusY+(20-taille),taille,taille);
+        ctx.fillRect(bonusX+(20-taille_bonus),bonusY+(20-taille_bonus),taille_bonus,taille_bonus);
     }
 }
 
