@@ -1,9 +1,11 @@
 # Mamlouk_Ahmed_Snake
 Jeu Snake avancé (avec niveaux) - Snake avec vitesse croissante, obstacles et bonus. Score et meilleurs scores locaux. Animations CSS. Travail sur Canvas, DOM et logique avancée.
 
-Jeu Snake Évolutif - Une version avancée du jeu classique Snake avec système de niveaux avec portails, obstacles, bonus et classement. Le serpent évolue à travers différents environnements avec des défis croissants.
+Jeu Snake Évolutif - avec système de niveaux avec portails, obstacles, bonus et classement. Le serpent évolue à travers différents environnements avec des défis croissants.
 
-Technologies utilisées
+## Lien : https://gyro15525.github.io/Mamlouk_Ahmed_Snake/
+
+## Technologies utilisées
 
   HTML5 : Structure de la page avec canvas pour le jeu
   
@@ -16,7 +18,7 @@ Technologies utilisées
   Canvas API : Rendu graphique du jeu
     
 
-Fonctionnalités principales:
+## Fonctionnalités principales:
 
   Jeu qui continu a l'infini en parcourant de differents niveau
 
@@ -36,7 +38,7 @@ Fonctionnalités principales:
   
   Effets sonores
 
-Nouveautés explorées:
+## Nouveautés explorées:
 
   Gestion avancée du Canvas : animations fluides, collisions complexes
   
@@ -50,7 +52,7 @@ Nouveautés explorées:
   
   Patterns de obstacles variés : labyrinthes, colonnes, zigzags, etc.
 
-Difficultés rencontrées:
+## Difficultés rencontrées:
 
   Rendre le jeu infini
   
@@ -77,7 +79,7 @@ Difficultés rencontrées:
   Créer des patterns d'obstacles variés mais toujours jouables
   
 
-Solutions apportées:
+## Solutions apportées:
 
   Des fonctions qui s'adaptes a chaque niveau non specifiques avec des variables qui parcour une liste de niveau predefinies
   
